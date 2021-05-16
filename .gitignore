@@ -6,6 +6,9 @@ deploy.yml
 pysvc.yml
 docker-tls-data.yml
 
+# Dependency files
+get-k3s.sh
+
 # Local Files
 env/.env
 
