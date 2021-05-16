@@ -1,0 +1,14 @@
+# Generated files
+__pycache__/
+certs/
+tags
+deploy.yml
+pysvc.yml
+docker-tls-data.yml
+
+# Local Files
+env/.env
+
+# Not yet ready to be tracked in VC
+docker-registry-setup/
+production_issuer.yml
