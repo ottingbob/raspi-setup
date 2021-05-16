@@ -13,10 +13,6 @@ SEND_FILE () {
   # Any extra args
   EXTRA_ARGS=$@
 
-  # Setup vars
-  # USER=root
-  # HOST=165.227.65.220
-
   # Move the weight
   echo "Copying file $FILE to $HOST..."
   cat $FILE | ssh $USER@$HOST "cat > ~/$FILE"
@@ -24,11 +20,14 @@ SEND_FILE () {
 }
 
 ARGS=( "$@" )
-echo "Found ${#ARGS[@]} args:"
+# TODO: Print help text if unmatched args
+# echo "Found ${#ARGS[@]} args:"
 
-USER=$1; shift;
-HOST=$1; shift;
+USER=$1; shift; unset 'ARGS[0]'
+HOST=$1; shift; unset 'ARGS[1]'
 printf "Preparing to send files to $USER@$HOST...\n"
+
+# Remove files from args
 
 for i in "${ARGS[@]}"
 do

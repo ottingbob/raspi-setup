@@ -47,6 +47,15 @@ k8s-deploy:
 	kubectl create deploy python-arm64 --image $(ARM_64_REPO_TAG) --port=5000 --dry-run=client -o yaml > deploy.yml
 	# Make sure we always pull new version
 	sed -i '/^.*- image:.*/a \\t\timagePullPolicy: Always' deploy.yml
+	sed -i '/^.*resources: {}/c\
+		    resources: {}\
+	        volumeMounts:\
+          - name: host-mon-data\
+            mountPath: /app/mon\
+      volumes:\
+        - name: host-mon-data\
+          hostPath:\
+            path: /tmp/mon' deploy.yml
 	expand -t 4 deploy.yml > deploy2.yml
 	mv deploy2.yml deploy.yml
 
@@ -57,8 +66,12 @@ k8s-yamls: k8s-deploy k8s-svc
 
 generate: build-arm k8s-yamls
 
-send-files:
+send-k8s-files:
 	./scripts/send-files.sh ubuntu $(REGISTRY_HOST) deploy.yml pysvc.yml
+
+send-mon-scripts:
+	./scripts/send-files.sh ubuntu $(REGISTRY_HOST) scripts/mon.py
+	./scripts/send-files.sh ubuntu $(NFS_HOST) scripts/mon.py
 
 clean:
 	rm -r certs/ __pycache__/ deploy.yml pysvc.yml tags > /dev/null 2>&1
