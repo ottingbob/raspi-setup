@@ -1,5 +1,6 @@
+import json
 import subprocess
-from flask import Flask
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
@@ -24,25 +25,14 @@ def local_cmd():
     return "done"
 
 
-# For AARCH64 we can use `sensors` to get temperature info
 @app.route("/temp")
 def temp_cmd():
-    # f = open('/tmp/cpu-temp-output', 'w+')
-    # temp_cmd = "which sensors"
-    # temp_cmd = "which grep"
-    temp_cmd = "id"
-    sensors_output = subprocess.run(temp_cmd.split(' '),
-                                    capture_output=True,
-                                    text=True)
-    if sensors_output.returncode != 0:
-        app.logger.info(sensors_output.returncode)
-        app.logger.info(sensors_output.stdout)
-        app.logger.info(sensors_output.stderr)
-        return "Failure getting temperature..."
-    if sensors_output.stdout is not None:
-        for line in sensors_output.stdout.split('\n'):
-            app.logger.info(line)
-    return "Successfully got temperature"
+    json_data_str = "{}"
+    with open('/app/mon/cpu_info.json', 'r') as json_file:
+        json_data_str = json_file.read()
+    json_data = json.loads(json_data_str)
+    app.logger.info(json_data)
+    return jsonify(json_data)
 
 
 if __name__ == "__main__":
