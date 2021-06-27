@@ -5,9 +5,13 @@ tags
 deploy.yml
 pysvc.yml
 docker-tls-data.yml
+deploy-32bit.yml
+pysvc-32bit.yml
 
 # Dependency files
 get-k3s.sh
+prom-operator/
+nfs-client-provisioner/
 
 # Local Files
 env/.env

@@ -12,10 +12,35 @@ I have setup a `.env` file in `./env/.env` in order to hold config like:
 - NFS_HOST
 - HOST_SUBNET
 
+For the monitoring I have a `scripts/mon.py` file to deploy out onto the
+different hosts in the cluster.
+
+I need to use a node-selector in the given deploy.yml k8s files in order
+to have the right images go to the given hosts.
+
+```
+spec:
+  template:
+    spec:
+      containers: []
+      nodeSelector:
+        kubernetes.io/hostname: <HOSTNAME>
+        # OR you could do the following
+        kubernetes.io/arch: arm64
 ```
 
-  Warnings related to incorrectly unsecured registry:
+To add an insecure docker host on the k3s side for kubelet add this into
+the `/etc/rancher/k3s/registries.yaml` file:
+https://rancher.com/docs/k3s/latest/en/installation/private-registry/
 
+```
+```
+
+===
+
+Warnings related to incorrectly unsecured registry:
+
+```
   https://rancher.com/docs/k3s/latest/en/installation/private-registry/
 
   Warning  Failed     11s (x2 over 23s)  kubelet            Failed to pull image "$REGISTRY_HOST:$REGISTRY_PORT/pibuild:0.0.1.aarm64": rpc error: code = Unknown desc = failed to pull and unpack image "$REGISTRY_HOST:$REGISTRY_PORT/pibuild:0.0.1.aarm64": failed to resolve reference "$REGISTRY_HOST:$REGISTRY_PORT/pibuild:0.0.1.aarm64": failed to do request: Head "https://$REGISTRY_HOST:$REGISTRY_PORT/v2/pibuild/manifests/0.0.1.aarm64": x509: certificate signed by unknown authority
@@ -65,6 +90,22 @@ $ cat /boot/firmware/cmdline.txt
 net.ifnames=0 dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=LABEL=writable rootfstype=ext4 elevator=deadline rootwait fixrtc cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1
 ```
 
+### K8s nfs-client-provisioner
+
+From ref [k8s nfs setup](https://michael-tissen.medium.com/setting-up-an-raspberrypi4-k3s-cluster-with-nfs-persistent-storage-a931ebb85737)
+
+Download necessary files for deploying provisioner:
+
+```
+wget https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/raw/master/deploy/rbac.yaml
+wget https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/raw/master/deploy/class.yaml
+wget https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/blob/master/deploy/deployment.yaml
+```
+
+Replace the nfs-server hostname and path:
+```
+```
+
 ##### Getting Proper Software
 
 Can't remember if there is anything for k3s we need to get specifically
@@ -102,6 +143,9 @@ Getting helm via [the docs on the instgllation](https://helm.sh/docs/intro/insta
     {"repositories":["pibuild"]}
     $ curl --insecure https://$REGISTRY_HOST:$REGISTRY_PORT/v2/pibuild/tags/list
     {"name":"pibuild","tags":["0.0.1.armv7l","0.0.1.aarm64","0.0.1"]}
+
+Looking up how to deploy the [prometheus-operator](https://grafana.com/docs/grafana-cloud/quickstart/prometheus_operator/)
+
 
 ### Accessing the PIs
 
